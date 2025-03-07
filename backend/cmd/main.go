@@ -15,11 +15,11 @@ func main() {
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
 
-	auth := r.Group("/")
-	auth.Use(middleware.AuthMiddleware())
-	auth.GET("/protected", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "This is a protected route"})
-	})
+	r.POST("/posts", middleware.AuthMiddleware(), handlers.CreatePost)
+	r.GET("/posts", handlers.GetPosts)    // Public
+	r.GET("/posts/:id", handlers.GetPost) // Public
+	r.POST("/posts/:id/upvote", middleware.AuthMiddleware(), handlers.UpvotePost)
+	r.POST("/posts/:id/downvote", middleware.AuthMiddleware(), handlers.DownvotePost)
 
 	r.Run(":8080")
 }
