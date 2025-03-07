@@ -7,5 +7,5 @@ import (
 
 func main() {
 	config.ConnectDB()
-	config.DB.AutoMigrate(&models.Post{})
+	config.DB.AutoMigrate(&models.Post{}, &models.User{})
 }

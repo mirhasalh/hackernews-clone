@@ -1,26 +1,25 @@
 package main
 
 import (
-	"log"
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/mirhasalh/hackernews-clone/backend/config"
+	"github.com/mirhasalh/hackernews-clone/backend/handlers"
+	"github.com/mirhasalh/hackernews-clone/backend/middleware"
 )
 
 func main() {
-	config.LoadEnv()
 	config.ConnectDB()
-	config.ConnectRedis()
 
 	r := gin.Default()
 
-	// Basic test route
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "Hacker News Clone API"})
+	r.POST("/register", handlers.Register)
+	r.POST("/login", handlers.Login)
+
+	auth := r.Group("/")
+	auth.Use(middleware.AuthMiddleware())
+	auth.GET("/protected", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "This is a protected route"})
 	})
 
-	port := os.Getenv("PORT")
-	log.Println("Server running on port", port)
-	r.Run(":" + port)
+	r.Run(":8080")
 }
