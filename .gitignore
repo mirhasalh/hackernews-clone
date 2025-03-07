@@ -1,0 +1,67 @@
+# General
+.DS_Store
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.*.local
+*.log
+*.tmp
+
+# Go
+bin/
+pkg/
+*.exe
+*.test
+*.out
+*.o
+*.a
+*.so
+*.swp
+vendor/
+go.sum
+go.work
+go.work.sum
+cover.out
+
+# PostgreSQL (if using migrations)
+db/*.db
+db/migrations/*.log
+
+# Docker
+docker-compose.override.yml
+*.dockerfile
+
+# Editor/IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# React (Vite or Next.js)
+frontend/node_modules/
+frontend/.turbo/
+frontend/.next/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/coverage/
+frontend/out/
+
+# Logs
+backend/logs/
+frontend/logs/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Linting
+.eslintcache
+
+# Testing
+coverage/
+*.lcov
