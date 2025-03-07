@@ -11,7 +11,7 @@ build/
 
 # Go
 bin/
-pkg/
+# pkg/
 *.exe
 *.test
 *.out
