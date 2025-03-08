@@ -1,14 +1,19 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Post struct {
-	ID        uint   `gorm:"primaryKey"`
-	Title     string `gorm:"not null"`
-	URL       string `gorm:"unique"`
-	Text      string
-	Score     int
-	AuthorID  uint
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	CreatedAt time.Time      `json:"createdAt"`
+	UpdatedAt time.Time      `json:"updatedAt"`
+	DeletedAt gorm.DeletedAt `json:"deletedAt,omitempty"`
+	Title     string         `gorm:"not null" json:"title"`
+	URL       string         `gorm:"unique" json:"url"`
+	Text      string         `json:"text"`
+	Score     int            `json:"score"`
+	AuthorID  uint           `json:"authorId"`
 }
