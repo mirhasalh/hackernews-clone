@@ -14,6 +14,7 @@ func main() {
 
 	r.POST("/register", handlers.Register)
 	r.POST("/login", handlers.Login)
+	r.GET("/me", handlers.AuthMe)
 
 	r.POST("/posts", middleware.AuthMiddleware(), handlers.CreatePost)
 	r.GET("/posts", handlers.GetPosts)    // Public

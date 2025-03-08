@@ -1,10 +1,9 @@
 import { Post } from "../types";
 
 async function fetchPosts(): Promise<Post[]> {
-  const res = await fetch("http://localhost:8080/posts", { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/posts`, { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch posts");
   const data = await res.json();
-  console.log('Res:', data)
   return data.posts;
 }
 
@@ -22,16 +21,22 @@ export default async function Home() {
       {posts.length === 0 ? (
         <p>No posts available.</p>
       ) : (
-        <ul>
-          {posts.map((post) => (
-            <li key={post.id}>
-              <a href={post.url || "#"}>
-                {post.title}
-              </a>{" "}
-              - <span>Score: {post.score}</span>
-            </li>
-          ))}
-        </ul>
+        <table>
+          <tbody>
+            {posts.map((post, i) => (
+              <tr>
+                <td>{i + 1}.</td>
+                <td><button>Upvote</button></td>
+                <td>
+                  <div>
+                    <a href={post.url}>{post.title}</a><br />
+                    <small>{post.score} Points</small>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
     </main>
   );
