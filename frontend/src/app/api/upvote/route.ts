@@ -1,20 +1,22 @@
+import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-    const cookies = req.cookies.get('session');
+    const cookieStore = await cookies()
+    const hasSession = cookieStore.has('session')
 
-    if (!cookies) {
-        return NextResponse.redirect(new URL("/auth", req.nextUrl));
+    if (!hasSession) {
+        return NextResponse.json({ message: "Unauthorized", redirect: "/auth" }, { status: 200 });
     }
 
     try {
         const body = await req.json();
         const { id } = body;
 
-        console.log("ID:", id);
+        // TODO: Integrate with upvote API
 
         return NextResponse.json({ message: `Received ID: ${id}` }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+        return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
     }
 }
