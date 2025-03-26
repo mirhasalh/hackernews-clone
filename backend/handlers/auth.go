@@ -64,7 +64,7 @@ func Login(c *gin.Context) {
 
 	c.SetCookie("token", tokenString, 72*3600, "/", "", true, true)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful"})
+	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": tokenString})
 }
 
 func Logout(c *gin.Context) {

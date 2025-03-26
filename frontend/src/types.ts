@@ -8,3 +8,8 @@ export interface Post {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface User {
+    id: number;
+    username: string;
+}
