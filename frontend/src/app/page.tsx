@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([])
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User>({ id: -1, username: "" });
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/posts`)
@@ -17,12 +17,12 @@ export default function Home() {
 
     fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user`)
       .then((res) => res.json())
-      .then((data) => console.log('Data:', data))
+      .then((data) => setUser(data.user))
   }, [])
 
   return (
     <main>
-      {user !== null ? (
+      {user.id !== -1 ? (
         <span>{user!.username}</span>
       ) : (
         <a href="/auth">Register/Login</a>
