@@ -20,7 +20,7 @@ func Register(c *gin.Context) {
 		Password string `json:"password" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -28,11 +28,17 @@ func Register(c *gin.Context) {
 
 	user := models.User{Username: input.Username, PasswordHash: string(hashedPassword)}
 	if err := config.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create user"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": user.Username,
+		"exp":      time.Now().Add(time.Hour * 72).Unix(),
+	})
+	tokenString, _ := token.SignedString(jwtSecret)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully", "token": tokenString})
 }
 
 func Login(c *gin.Context) {
@@ -41,18 +47,18 @@ func Login(c *gin.Context) {
 		Password string `json:"password" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
 	var user models.User
 	if err := config.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid credentials"})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(input.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid credentials"})
 		return
 	}
 
@@ -77,14 +83,14 @@ func AuthMe(c *gin.Context) {
 	// Extract token from Authorization header
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header missing"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Authorization header missing"})
 		return
 	}
 
 	// Expected format: "Bearer <token>"
 	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 	if tokenString == authHeader { // Token not found
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token format"})
 		return
 	}
 
@@ -93,14 +99,14 @@ func AuthMe(c *gin.Context) {
 		return jwtSecret, nil
 	})
 	if err != nil || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token"})
 		return
 	}
 
 	// Extract username from token claims
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || claims["username"] == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Invalid token claims"})
 		return
 	}
 	username := claims["username"].(string)
@@ -108,7 +114,7 @@ func AuthMe(c *gin.Context) {
 	// Fetch user from database
 	var user models.User
 	if err := config.DB.Where("username = ?", username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "User not found"})
 		return
 	}
 
