@@ -9,14 +9,26 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: "Unauthorized", redirect: "/auth" }, { status: 200 });
     }
 
+    const session = cookieStore.get('session')
+
     try {
         const body = await req.json();
         const { id } = body;
 
-        // TODO: Integrate with upvote API
+        const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/${id}/upvote`
+        const res = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session?.value}`,
+            },
+        });
 
-        return NextResponse.json({ message: `Received ID: ${id}` }, { status: 200 });
+        const data = await res.json()
+        const message = data.message
+
+        return NextResponse.json({ message: message }, { status: 200 });
     } catch (error) {
-        return NextResponse.json({ message: "Invalid JSON body" }, { status: 400 });
+        return NextResponse.json({ message: error }, { status: 400 });
     }
 }

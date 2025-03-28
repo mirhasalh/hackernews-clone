@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     <main>
-      {user.id !== -1 ? (
+      {user && user.username !== "" ? (
         <span>{user!.username}</span>
       ) : (
         <a href="/auth">Register/Login</a>

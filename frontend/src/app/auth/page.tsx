@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Page() {
@@ -8,7 +7,7 @@ export default function Page() {
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>, type: "register" | "login") => {
         event.preventDefault();
-        const router = useRouter()
+        // const router = useRouter()
 
         const formData = new FormData(event.currentTarget);
         const username = formData.get("username") as string;
@@ -28,7 +27,7 @@ export default function Page() {
             console.log('Data:', data);
             setMessage(data.message || "Success!");
 
-            if (res.ok) router.push('/')
+            if (res.ok) window.location.href = '/'
         } catch (error) {
             setMessage("Something went wrong. Please try again.");
         }
