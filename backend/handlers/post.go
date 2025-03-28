@@ -13,7 +13,7 @@ import (
 func CreatePost(c *gin.Context) {
 	var post models.Post
 	if err := c.ShouldBindJSON(&post); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
 
@@ -22,7 +22,7 @@ func CreatePost(c *gin.Context) {
 	post.CreatedAt = post.CreatedAt.UTC()
 
 	if err := config.DB.Create(&post).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create post"})
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create post"})
 		return
 	}
 
@@ -42,7 +42,7 @@ func GetPost(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := config.DB.First(&post, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Post not found"})
 		return
 	}
 
@@ -55,7 +55,7 @@ func UpvotePost(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := config.DB.First(&post, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Post not found"})
 		return
 	}
 
@@ -71,7 +71,7 @@ func DownvotePost(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	if err := config.DB.First(&post, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		c.JSON(http.StatusNotFound, gin.H{"message": "Post not found"})
 		return
 	}
 
