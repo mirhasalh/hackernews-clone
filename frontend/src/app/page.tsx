@@ -20,6 +20,14 @@ export default function Home() {
       .then((data) => setUser(data.user))
   }, [])
 
+  const onUpvoted = (id: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === id ? { ...post, score: post.score + 1 } : post
+      )
+    );
+  };
+
   return (
     <main>
       {user && user.username !== "" ? (
@@ -29,7 +37,7 @@ export default function Home() {
       )
       }
       <h1>Hacker News Clone</h1>
-      <Posts posts={posts} />
+      <Posts posts={posts} onUpvoted={onUpvoted} />
     </main>
   );
 }

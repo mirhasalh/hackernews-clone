@@ -2,25 +2,29 @@
 
 import { useRouter } from 'next/navigation'
 import { Post } from "@/types";
-import axios from "axios";
 
 interface PostsProps {
     posts: Post[];
+    onUpvoted: (id: number) => void;
 }
 
-export default function Posts({ posts }: PostsProps) {
+export default function Posts({ posts, onUpvoted }: PostsProps) {
     const router = useRouter()
 
     const onUpvote = async (id: number) => {
         try {
             const body = JSON.stringify({ id })
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upvote`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/upvote`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: body,
             })
 
-            if (res.data.message === 'Unauthorized') router.push('/auth')
+            const data = await res.json()
+
+            if (data.message === 'Unauthorized') router.push('/auth')
+
+            if (data.message === 'Post upvoted') onUpvoted(id)
         } catch (error) {
             console.error("Error:", error);
         }

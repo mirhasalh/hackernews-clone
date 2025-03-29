@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
         const { id } = body;
 
         const url = `${process.env.NEXT_PUBLIC_API_BASE_URL}/posts/${id}/upvote`
+        console.log('URL:', url);
         const res = await fetch(url, {
             method: "POST",
             headers: {
